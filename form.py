@@ -1,5 +1,17 @@
 import tkinter as tk
 from tkinter import messagebox
+import pandas as pd
+import threading
+import recommender
+
+
+df = pd.DataFrame()
+def getData():
+    global df
+    df = pd.read_csv("https://raw.githubusercontent.com/bjohn108-ODU/CS620/refs/heads/main/CleanData.csv")
+
+reader = threading.Thread(target=getData)
+reader.start()
 
 window = tk.Tk()
 window.title("Youth Behavior Obesity Risk Assessment")
@@ -7,17 +19,7 @@ bg_color = "#fff5bf"
 hover_color = "#96fff8"
 window.configure(bg=bg_color)
 window.geometry("800x600")
-"""
-name_label = tk.Label(window, text="Name:")
-name_label.pack()
-name_entry = tk.Entry(window)
-name_entry.pack()
 
-email_label = tk.Label(window, text="Email:")
-email_label.pack()
-email_entry = tk.Entry(window)
-email_entry.pack()
-"""
 location_label = tk.Label(window, text="Location", bg = bg_color)
 location_label.pack()
 location_options= [ "Prefer not to say",
@@ -190,28 +192,13 @@ q6_drop.configure(activebackground=hover_color)
 q6_drop.pack()
 
 def submit():
-    """
-    name = name_entry.get()
-    email = email_entry.get()
-    """
-    """
     location = location_entry.get()
-    race = race_entry.get()
-    gender = gender_entry.get()
-    grade = grade_entry.get()
-    
-    vegetable = q1_entry.get()
-    fruit = q2_entry.get()
-    soda = q3_entry.get()
-    tv = q4_entry.get()
-    pa = q5_entry.get()
-    pe = q6_entry.get()
-    """
+    stratifications = []
+    stratifications.append(race_entry.get())
+    stratifications.append(gender_entry.get())
+    stratifications.append(grade_entry.get())
+
     responses = []
-    responses.append(location_entry.get())
-    responses.append(race_entry.get())
-    responses.append(gender_entry.get())
-    responses.append(grade_entry.get())
     responses.append(q1_entry.get())
     responses.append(q2_entry.get())
     responses.append(q3_entry.get())
@@ -219,15 +206,29 @@ def submit():
     responses.append(q5_entry.get())
     responses.append(q6_entry.get())
 
-    for i in responses:
+    if location == "Select an option":
+        messagebox.showwarning("Warning", "Please select an option for all questions")
+    
+    for i in stratifications:
         if i == "Select an option":
             messagebox.showwarning("Warning", "Please select an option for all questions")
             return
 
     for i in responses:
-        print(i)
+        if i == "Select an option":
+            messagebox.showwarning("Warning", "Please select an option for all questions")
+            return
 
-    #print(location, '\n', race, '\n', gender, '\n', grade, '\n', vegetable, '\n', fruit, '\n', soda, '\n', tv, '\n', pa, '\n', pe)
+    reader.join()
+    recommendation = recommender.recommend(location, stratifications, responses, df)
+    message = ""
+    if(recommendation[0] == recommendation[1]):
+        message = "To best reduce your risk of obesity and overweight status, " + recommendation[0]
+        #print("To best reduce your risk of obesity and overweight status, ", recommendation[0])
+    else:
+        message = "To best reduce your risk of obesity, " + recommendation[0] + "\nTo best reduce your risk of overweight status, " + recommendation[1]
+        #print("To best reduce your risk of obesity, ", recommendation[0], "\nTo best reduce your risk of overweight status, ", recommendation[1])
+    messagebox.showinfo("Results", message)
     window.destroy()
 
 submit_button = tk.Button(window, text="Submit", command=submit, bg="red", fg="white", activebackground="blue", activeforeground="white", font=("Times New Roman", 25))
