@@ -224,10 +224,8 @@ def submit():
     message = ""
     if(recommendation[0] == recommendation[1]):
         message = "To best reduce your risk of obesity and overweight status, " + recommendation[0]
-        #print("To best reduce your risk of obesity and overweight status, ", recommendation[0])
     else:
         message = "To best reduce your risk of obesity, " + recommendation[0] + "\nTo best reduce your risk of overweight status, " + recommendation[1]
-        #print("To best reduce your risk of obesity, ", recommendation[0], "\nTo best reduce your risk of overweight status, ", recommendation[1])
     messagebox.showinfo("Results", message)
     window.destroy()
 

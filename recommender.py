@@ -1,5 +1,5 @@
 import pandas as pd
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.cluster import KMeans
@@ -55,37 +55,6 @@ def getBehavior(differences, responses):
           return "You should try receiving physical education on a daily basis."
        case _:
           return "You should try eating more vegetables per day."
-
-def visualize(status, behavior, df):
-  col = ""
-  match behavior:
-      case "You should try eating at least one vegetable per day.":
-        col = "VegetableValue"
-      case "You should try eating more vegetables per day.":
-        col = "VegetableValue"
-      case "You should try eating at least one fruit per day.":
-        col = "FruitValue"
-      case "You should try to cut back on soda consumption, or cut it out entirely.":
-        col = "SodaValue"
-      case "You should try spending less time watching TV.":
-        col = "TvValue"
-      case "You should try engaging in at least one hour of physical activity every day.":
-        col = "PhysicalActivityValue"
-      case "You should try receiving physical education on a daily basis.":
-        col = "PhysicalEducationValue"
-      case _:
-        col = "DDD"
-  
-  print(col)
-
-  kmeans = KMeans(n_clusters=2)
-  current = df[[col, status]]
-  kmeans.fit(current)
-  labels = kmeans.labels_
-  current["labels"] = labels
-  sns.scatterplot(x=current[col], y=current[status], hue=current[labels], data=current[[col,status]])
-  plt.title('K-means Clustering with 2 dimensions')
-  plt.show()
 
 def recommend(location, stratifications, responses, df):
 
@@ -152,7 +121,6 @@ def recommend(location, stratifications, responses, df):
   overweightDifferences = getDifferences(responses, overweightCentroids)
   obeseBehavior = getBehavior(obeseDifferences, responses)
   overweightBehavior = getBehavior(overweightDifferences, responses)
-  visualize("ObeseValue", obeseBehavior, working)
 
   return [obeseBehavior, overweightBehavior]
 
